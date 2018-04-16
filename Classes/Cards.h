@@ -35,21 +35,29 @@ struct Card
 	ECardRank rank;
 };
 
-struct Deck
+class Deck
 {
 public:
-	static void Init(Deck* io_deck);
-	static void Shuffle(Deck* io_deck);
+	Deck() = default;
+	~Deck() = default;
+
+	void Init();
+	void Shuffle();
+
+	void Print() const;
 
 	static const char* GetSuitName(ECardSuit i_suit);
 	static const char* GetRankName(ECardRank i_rank);
-
-	static void Print(const Deck* i_deck);
+	static void PrintCard(const Card& i_card);
 
 public:
-	static constexpr uint8_t NUM_CARDS_IN_DECK = 52;
+	static constexpr uint8_t					NUM_CARDS_IN_DECK = 52;
 
-	Card cards[NUM_CARDS_IN_DECK];
+	inline const Card* GetCardAt(uint8_t i_index) const { return i_index < NUM_CARDS_IN_DECK ? &cards_[i_index] : nullptr; }
+
+private:
+	Card										cards_[NUM_CARDS_IN_DECK];
+
 };
 
 #endif // CARDS_H_

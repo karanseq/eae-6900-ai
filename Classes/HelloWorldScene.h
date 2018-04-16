@@ -5,25 +5,34 @@
 #include "cocos2d.h"
 
 // Game includes
-#include "Cards.h"
+#include "Hearts.h"
 
 class HelloWorld : public cocos2d::Scene
 {
 public:
     static cocos2d::Scene* createScene();
+    CREATE_FUNC(HelloWorld);
 
+protected:    
     virtual bool init();
     
-    void menuCloseCallback(cocos2d::Ref* pSender);
-    
-    CREATE_FUNC(HelloWorld);
+private:
+	void DealCards(float dt);
+
+public:
+	inline const cocos2d::Size& GetVisibleSize() const { return visible_size_; }
+	inline const cocos2d::Vec2& GetOrigin() const { return origin_; }
+
+private:
+	cocos2d::Size								visible_size_;
+	cocos2d::Vec2								origin_;
 
 private:
 	void initBootstrap();
-	void printDeck();
+    void menuCloseCallback(cocos2d::Ref* pSender);
 
 private:
-	Deck deck_;
+	Hearts										hearts_;
 
 };
 

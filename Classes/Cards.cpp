@@ -6,24 +6,32 @@
 // Engine includes
 #include "cocos2d.h"
 
-void Deck::Init(Deck* io_deck)
+void Deck::Init()
 {
-	uint8_t max_suit = (uint8_t)ECardSuit::Spades;
-	uint8_t max_rank = (uint8_t)ECardRank::Ace;
+	constexpr uint8_t max_suit = (uint8_t)ECardSuit::Spades;
+	constexpr uint8_t max_rank = (uint8_t)ECardRank::Ace;
 
 	for (uint8_t suit = 0; suit <= max_suit; ++suit)
 	{
 		for (uint8_t rank = 0; rank <= max_rank; ++rank)
 		{
-			io_deck->cards[suit * (max_rank + 1) + rank].suit = (ECardSuit)suit;
-			io_deck->cards[suit * (max_rank + 1) + rank].rank = (ECardRank)rank;
+			cards_[suit * (max_rank + 1) + rank].suit = (ECardSuit)suit;
+			cards_[suit * (max_rank + 1) + rank].rank = (ECardRank)rank;
 		}
 	}
 }
 
-void Deck::Shuffle(Deck* io_deck)
+void Deck::Shuffle()
 {
-	std::random_shuffle(io_deck->cards, io_deck->cards + NUM_CARDS_IN_DECK - 1);
+	std::random_shuffle(cards_, cards_ + NUM_CARDS_IN_DECK - 1);
+}
+
+void Deck::Print() const
+{
+	for (uint8_t i = 0; i < NUM_CARDS_IN_DECK; ++i)
+	{
+		CCLOG("Card:%d Suit:%s Rank:%s", i, GetSuitName(cards_[i].suit), GetRankName(cards_[i].rank));
+	}
 }
 
 const char* Deck::GetSuitName(ECardSuit i_suit)
@@ -78,10 +86,7 @@ const char* Deck::GetRankName(ECardRank i_rank)
 	}
 }
 
-void Deck::Print(const Deck* i_deck)
+void Deck::PrintCard(const Card& i_card)
 {
-	for (uint8_t i = 0; i < NUM_CARDS_IN_DECK; ++i)
-	{
-		CCLOG("Card-%d Suit:%s Rank:%s", i, GetSuitName(i_deck->cards[i].suit), GetRankName(i_deck->cards[i].rank));		
-	}
+	CCLOG("Suit:%s Rank:%s", GetSuitName(i_card.suit), GetRankName(i_card.rank));
 }

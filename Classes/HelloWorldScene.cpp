@@ -3,6 +3,8 @@
 
 USING_NS_CC;
 
+constexpr char* TTF_FONT_PATH = "fonts/Marker Felt.ttf";
+
 Scene* HelloWorld::createScene()
 {
     return HelloWorld::create();
@@ -22,12 +24,16 @@ bool HelloWorld::init()
     }
 
 	initBootstrap();
-	Deck::Init(&deck_);
-	Deck::Print(&deck_);
-	Deck::Shuffle(&deck_);
-	Deck::Print(&deck_);
-   
+
+	hearts_.Init(this);
+	scheduleOnce(CC_SCHEDULE_SELECTOR(HelloWorld::DealCards), 2.5f);
+
     return true;
+}
+
+void HelloWorld::DealCards(float dt)
+{
+	hearts_.DealCards();
 }
 
 void HelloWorld::menuCloseCallback(Ref* pSender)
@@ -41,8 +47,8 @@ void HelloWorld::menuCloseCallback(Ref* pSender)
 
 void HelloWorld::initBootstrap()
 {
-	auto visibleSize = Director::getInstance()->getVisibleSize();
-	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+	visible_size_ = Director::getInstance()->getVisibleSize();
+	origin_ = Director::getInstance()->getVisibleOrigin();
 
 	MenuItemImage* closeItem = MenuItemImage::create(
 		"CloseNormal.png",
@@ -58,8 +64,8 @@ void HelloWorld::initBootstrap()
 	}
 	else
 	{
-		float x = origin.x + visibleSize.width - closeItem->getContentSize().width / 2;
-		float y = origin.y + closeItem->getContentSize().height / 2;
+		float x = origin_.x + visible_size_.width - closeItem->getContentSize().width / 2;
+		float y = origin_.y + closeItem->getContentSize().height / 2;
 		closeItem->setPosition(Vec2(x, y));
 	}
 
@@ -67,15 +73,15 @@ void HelloWorld::initBootstrap()
 	menu->setPosition(Vec2::ZERO);
 	this->addChild(menu, 1);
 
-	auto label = Label::createWithTTF("Hearts", "fonts/Marker Felt.ttf", 24);
+	auto label = Label::createWithTTF("Hearts", TTF_FONT_PATH, 24);
 	if (label == nullptr)
 	{
-		problemLoading("'fonts/Marker Felt.ttf'");
+		problemLoading(TTF_FONT_PATH);
 	}
 	else
 	{
-		label->setPosition(Vec2(origin.x + visibleSize.width / 2,
-			origin.y + visibleSize.height - label->getContentSize().height));
+		label->setPosition(Vec2(origin_.x + visible_size_.width / 2,
+			origin_.y + visible_size_.height - label->getContentSize().height));
 
 		this->addChild(label, 1);
 	}
@@ -87,7 +93,7 @@ void HelloWorld::initBootstrap()
 	}
 	else
 	{
-		sprite->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
+		sprite->setPosition(Vec2(visible_size_.width / 2 + origin_.x, visible_size_.height / 2 + origin_.y));
 		this->addChild(sprite, 0);
 	}
 }
