@@ -1,9 +1,23 @@
 #include "HelloWorldScene.h"
+
+// Engine includes
 #include "SimpleAudioEngine.h"
+
+// Game includes
+#include "Cards.h"
+#include "Player.h"
 
 USING_NS_CC;
 
 constexpr char* TTF_FONT_PATH = "fonts/Marker Felt.ttf";
+constexpr float DELAY_BEFORE_STARTING_ROUND = 0.25f;//1.0f;
+constexpr float DELAY_BEFORE_STARTING_TURN = 0.25;//1.5f;
+constexpr float DELAY_BEFORE_PLAYING_CARD = 0.25f;
+
+const Vec2 PLAYER0_PLAYED_CARD_POSITION = Vec2(640.0f, 200.0f);
+const Vec2 PLAYER1_PLAYED_CARD_POSITION = Vec2(320.0f, 400.0f);
+const Vec2 PLAYER2_PLAYED_CARD_POSITION = Vec2(640.0f, 200.0f);
+const Vec2 PLAYER3_PLAYED_CARD_POSITION = Vec2(960.0f, 400.0f);
 
 Scene* HelloWorld::createScene()
 {
@@ -26,14 +40,51 @@ bool HelloWorld::init()
 	initBootstrap();
 
 	hearts_.Init(this);
-	scheduleOnce(CC_SCHEDULE_SELECTOR(HelloWorld::DealCards), 2.5f);
+	scheduleOnce(CC_SCHEDULE_SELECTOR(HelloWorld::StartRound), DELAY_BEFORE_STARTING_ROUND);
 
     return true;
 }
 
-void HelloWorld::DealCards(float dt)
+void HelloWorld::FinishedDealingCards()
 {
-	hearts_.DealCards();
+	//CCLOG(__FUNCTION__);
+	scheduleOnce(CC_SCHEDULE_SELECTOR(HelloWorld::StartTurn), DELAY_BEFORE_STARTING_TURN);
+}
+
+void HelloWorld::FinishedPlayingCard(const Card& i_card)
+{
+	//CCLOG(__FUNCTION__);
+	scheduleOnce(CC_SCHEDULE_SELECTOR(HelloWorld::PlayCard), DELAY_BEFORE_PLAYING_CARD);
+}
+
+void HelloWorld::FinishedTurn(const Turn& i_turn)
+{
+	//CCLOG(__FUNCTION__);
+	scheduleOnce(CC_SCHEDULE_SELECTOR(HelloWorld::StartTurn), DELAY_BEFORE_STARTING_TURN);
+}
+
+void HelloWorld::FinishedRound()
+{
+	//CCLOG(__FUNCTION__);
+	scheduleOnce(CC_SCHEDULE_SELECTOR(HelloWorld::StartRound), DELAY_BEFORE_STARTING_ROUND);
+}
+
+void HelloWorld::StartRound(float dt)
+{
+	//CCLOG(__FUNCTION__);
+	hearts_.StartRound();
+}
+
+void HelloWorld::StartTurn(float dt)
+{
+	//CCLOG(__FUNCTION__);
+	hearts_.StartTurn();
+}
+
+void HelloWorld::PlayCard(float dt)
+{
+	//CCLOG(__FUNCTION__);
+	hearts_.PlayCard();
 }
 
 void HelloWorld::menuCloseCallback(Ref* pSender)

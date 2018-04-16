@@ -45,6 +45,22 @@ struct Card
 	{}
 
 	static Card INVALID;
+	static Card TWO_OF_CLUBS;
+
+	inline bool operator==(const Card& i_other) const
+	{
+		return suit == i_other.suit && rank == i_other.rank;
+	}
+
+	inline bool operator==(const ECardSuit i_suit) const
+	{
+		return suit == i_suit;
+	}
+
+	inline bool operator==(const ECardRank i_rank) const
+	{
+		return rank == i_rank;
+	}
 
 	inline bool operator<(const Card& i_other) const 
 	{

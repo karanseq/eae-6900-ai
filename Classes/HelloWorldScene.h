@@ -7,6 +7,10 @@
 // Game includes
 #include "Hearts.h"
 
+// Forward declarations
+class Turn;
+struct Card;
+
 class HelloWorld : public cocos2d::Scene
 {
 public:
@@ -16,8 +20,16 @@ public:
 protected:    
     virtual bool init();
     
+public:
+	void FinishedDealingCards();
+	void FinishedPlayingCard(const Card& i_card);
+	void FinishedTurn(const Turn& i_turn);
+	void FinishedRound();
+
 private:
-	void DealCards(float dt);
+	void StartRound(float dt);
+	void StartTurn(float dt);
+	void PlayCard(float dt);
 
 public:
 	inline const cocos2d::Size& GetVisibleSize() const { return visible_size_; }

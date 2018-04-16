@@ -8,6 +8,7 @@
 
 // Static member initialization
 Card Card::INVALID;
+Card Card::TWO_OF_CLUBS(ECardSuit::Clubs, ECardRank::Two);
 
 void Deck::Init()
 {

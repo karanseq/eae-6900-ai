@@ -6,6 +6,7 @@
 #include <vector>
 
 // Forward declarations
+class Turn;
 struct Card;
 
 //============================================================================
@@ -19,6 +20,13 @@ public:
 
 	void Init(uint8_t i_id);
 	void Print() const;
+
+	Card PlayCardForCurrentTurn(const Turn& i_turn);
+
+	inline bool HasCard(const Card& i_card) const { return std::find(hand_.begin(), hand_.end(), i_card) != hand_.end(); }
+
+private:
+	uint8_t FindSafestCardForTurn(const Turn& i_turn) const;
 
 public:
 	static constexpr uint8_t	NUM_PLAYERS = 4;
@@ -41,17 +49,21 @@ private:
 class Turn
 {
 public:
-	Turn() = default;
+	Turn(uint8_t i_id, const uint8_t* i_order);
 	~Turn() = default;
 
-	void Init(uint8_t i_id, const uint8_t* i_order);
 	void Print() const;
+
+	inline void AddCard(const Card& i_card) { cards_.push_back(i_card); }
+	void FindLoser();
 
 public:
 	inline const uint8_t* GetOrder() const { return order_; }
+	inline uint8_t GetId() const { return id_; }
 	inline uint8_t GetLoser() const { return loser_id_; }
 	inline const std::vector<Card>& GetCardsPlayed() const { return cards_; }
 	inline std::vector<Card>& GetCardsPlayed() { return cards_; }
+	inline uint8_t GetNumCardsPlayed() const { return uint8_t(cards_.size()); }
 
 private:
 	uint8_t										order_[Player::NUM_PLAYERS];
