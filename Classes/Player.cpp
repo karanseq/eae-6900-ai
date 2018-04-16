@@ -14,7 +14,7 @@ void Player::Init(uint8_t i_id)
 {
 	id_ = i_id;
 	hand_.reserve(Hearts::NUM_CARDS_PER_PLAYER);
-	hand_.resize(Hearts::NUM_CARDS_PER_PLAYER, nullptr);
+	hand_.resize(Hearts::NUM_CARDS_PER_PLAYER, Card::INVALID);
 }
 
 void Player::Print() const
@@ -23,7 +23,7 @@ void Player::Print() const
 	CCLOG("Score:%d", score_);
 	for (const auto& card : hand_)
 	{
-		Deck::PrintCard(*card);
+		Deck::PrintCard(card);
 	}
 }
 
@@ -35,7 +35,7 @@ void Turn::Init(uint8_t i_id, const uint8_t* i_order)
 	id_ = i_id;
 	memcpy_s(order_, sizeof(uint8_t) * Player::NUM_PLAYERS, i_order, sizeof(uint8_t) * Player::NUM_PLAYERS);
 	cards_.reserve(Player::NUM_PLAYERS);
-	cards_.resize(Player::NUM_PLAYERS, nullptr);
+	cards_.resize(Player::NUM_PLAYERS, Card::INVALID);
 }
 
 void Turn::Print() const
@@ -45,6 +45,6 @@ void Turn::Print() const
 	CCLOG("Loser:%d", loser_id_);
 	for (const auto& card : cards_)
 	{
-		Deck::PrintCard(*card);
+		Deck::PrintCard(card);
 	}
 }

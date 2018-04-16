@@ -6,6 +6,9 @@
 // Engine includes
 #include "cocos2d.h"
 
+// Static member initialization
+Card Card::INVALID;
+
 void Deck::Init()
 {
 	constexpr uint8_t max_suit = (uint8_t)ECardSuit::Spades;
@@ -47,7 +50,7 @@ const char* Deck::GetSuitName(ECardSuit i_suit)
 	case ECardSuit::Spades:
 		return "Spades";
 	default:
-		return "None";
+		return "Invalid";
 	}
 }
 
@@ -82,7 +85,7 @@ const char* Deck::GetRankName(ECardRank i_rank)
 	case ECardRank::Ace:
 		return "Ace";
 	default:
-		return "None";
+		return "Invalid";
 	}
 }
 

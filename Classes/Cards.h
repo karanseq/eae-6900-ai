@@ -9,7 +9,8 @@ enum class ECardSuit : uint8_t
 	Clubs,
 	Diamonds,
 	Hearts,
-	Spades
+	Spades,
+	Invalid
 };
 
 enum class ECardRank : uint8_t
@@ -26,13 +27,29 @@ enum class ECardRank : uint8_t
 	Jack,
 	Queen,
 	King,
-	Ace
+	Ace,
+	Invalid
 };
 
 struct Card
 {
 	ECardSuit suit;
 	ECardRank rank;
+
+	Card(ECardSuit i_suit, ECardRank i_rank) : suit(i_suit),
+		rank(i_rank)
+	{}
+
+	Card() : suit(ECardSuit::Invalid),
+		rank(ECardRank::Invalid)
+	{}
+
+	static Card INVALID;
+
+	inline bool operator<(const Card& i_other) const 
+	{
+		return suit == i_other.suit ? (rank < i_other.rank) : (suit < i_other.suit);
+	}
 };
 
 class Deck
@@ -53,7 +70,7 @@ public:
 public:
 	static constexpr uint8_t					NUM_CARDS_IN_DECK = 52;
 
-	inline const Card* GetCardAt(uint8_t i_index) const { return i_index < NUM_CARDS_IN_DECK ? &cards_[i_index] : nullptr; }
+	inline const Card& GetCardAt(uint8_t i_index) const { return i_index < NUM_CARDS_IN_DECK ? cards_[i_index] : Card::INVALID; }
 
 private:
 	Card										cards_[NUM_CARDS_IN_DECK];
