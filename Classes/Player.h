@@ -5,9 +5,11 @@
 #include <stdint.h>
 #include <vector>
 
+// Game includes
+#include "Cards.h"
+
 // Forward declarations
 class Turn;
-struct Card;
 
 //============================================================================
 // Player
@@ -65,7 +67,9 @@ public:
 	inline uint8_t GetLoser() const { return loser_id_; }
 	inline const std::vector<Card>& GetCardsPlayed() const { return cards_; }
 	inline std::vector<Card>& GetCardsPlayed() { return cards_; }
+
 	inline uint8_t GetNumCardsPlayed() const { return uint8_t(cards_.size()); }
+	inline ECardSuit GetLeadingCardSuit() const { return (cards_.empty() ? ECardSuit::Invalid : cards_[0].suit); }
 
 private:
 	uint8_t										order_[Player::NUM_PLAYERS];

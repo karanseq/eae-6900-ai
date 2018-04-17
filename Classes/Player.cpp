@@ -106,6 +106,21 @@ uint8_t Player::FindCardWhenNoCardsPlayed(const Turn& i_turn) const
 uint8_t Player::FindCardWhenHaveLeadingSuit(const Turn& i_turn) const
 {
 	uint8_t card_index = Hearts::NUM_CARDS_PER_PLAYER;
+
+	// Find the rank of the highest card of the leading suit that has been played
+	const ECardSuit leading_suit = i_turn.GetLeadingCardSuit();
+	uint8_t index_highest_played_card = Deck::FindHighestCard(i_turn.GetCardsPlayed(), leading_suit);
+
+	if (index_highest_played_card < Hearts::NUM_CARDS_PER_PLAYER)
+	{
+		const ECardRank highest_rank = i_turn.GetCardsPlayed()[index_highest_played_card].rank;
+		card_index = Deck::FindHighestCard(hand_, leading_suit, highest_rank);
+	}
+	else
+	{
+		card_index = Deck::FindLowestCard(hand_, leading_suit);
+	}
+
 	return card_index;
 }
 
