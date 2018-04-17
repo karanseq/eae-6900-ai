@@ -41,9 +41,7 @@ Card Player::PlayCardForCurrentTurn(const Turn& i_turn)
 		}
 		else
 		{
-			// What's the safest card I can discard
-			const uint8_t safest_card_index = FindSafestCardForTurn(i_turn);
-			playing_card_index = safest_card_index < Hearts::NUM_CARDS_PER_PLAYER ? safest_card_index : playing_card_index;
+			playing_card_index = FindCardWhenNoCardsPlayed(i_turn);
 		}
 	}
 	else
@@ -56,10 +54,14 @@ Card Player::PlayCardForCurrentTurn(const Turn& i_turn)
 		ECardRank leading_card_rank = cards_played[0].rank;
 
 		// Do I have a card that matches the leading suit?
-		const auto last_matching_card = std::find(hand_.begin(), hand_.end(), leading_card_suit);
-		if (last_matching_card != hand_.end())
+		bool have_leading_suit = Deck::HasCardWithSuit(hand_, leading_card_suit);
+		if (have_leading_suit)
 		{
-			playing_card_index = last_matching_card - hand_.begin();
+			playing_card_index = FindCardWhenHaveLeadingSuit(i_turn);
+		}
+		else
+		{
+			playing_card_index = FindCardWhenDontHaveLeadingSuit(i_turn);
 		}
 	}
 
@@ -81,9 +83,36 @@ Card Player::PlayCardForCurrentTurn(const Turn& i_turn)
 	}
 }
 
-uint8_t Player::FindSafestCardForTurn(const Turn& i_turn) const
+uint8_t Player::FindCardWhenNoCardsPlayed(const Turn& i_turn) const
 {
-	return rand() % hand_.size();
+	uint8_t card_index = Hearts::NUM_CARDS_PER_PLAYER;
+	ECardRank lowest_rank = ECardRank::Invalid;
+
+	for (uint8_t i = 0; i < uint8_t(ECardSuit::Invalid); ++i)
+	{
+		// Find the lowest card for each suit
+		uint8_t lowest_card_index = Deck::FindLowestCard(hand_, ECardSuit(i));
+		if (lowest_card_index < Hearts::NUM_CARDS_PER_PLAYER &&
+			hand_[lowest_card_index].rank < lowest_rank)
+		{
+			lowest_rank = hand_[lowest_card_index].rank;
+			card_index = lowest_card_index;
+		}
+	}
+
+	return card_index;
+}
+
+uint8_t Player::FindCardWhenHaveLeadingSuit(const Turn& i_turn) const
+{
+	uint8_t card_index = Hearts::NUM_CARDS_PER_PLAYER;
+	return card_index;
+}
+
+uint8_t Player::FindCardWhenDontHaveLeadingSuit(const Turn& i_turn) const
+{
+	uint8_t card_index = Hearts::NUM_CARDS_PER_PLAYER;
+	return card_index;
 }
 
 //============================================================================

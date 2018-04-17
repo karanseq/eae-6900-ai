@@ -24,6 +24,12 @@ void Hearts::Init(HelloWorld* i_scene)
 	}
 
 	turns_.reserve(NUM_CARDS_PER_PLAYER);
+
+	for (uint8_t i = 0; i < 10; ++i)
+	{
+		CCLOG("Test Iteration %02d", i);
+		RunTest();
+	}
 }
 
 void Hearts::Shutdown()
@@ -139,4 +145,30 @@ void Hearts::DealCards()
 	}
 
 	scene_->FinishedDealingCards();
+}
+
+void Hearts::RunTest() const
+{
+	Deck deck;
+	deck.Init();
+	deck.Shuffle();
+
+	Player player;
+	player.Init(0);
+	
+	std::vector<Card>& player_hand = player.GetCardsInHand();
+	for (uint8_t i = 0; i < NUM_CARDS_PER_PLAYER; ++i)
+	{
+		player_hand.push_back(deck.GetCardAt(i));
+	}
+	std::sort(player_hand.begin(), player_hand.end());
+
+	constexpr uint8_t turn_id = 1;
+	constexpr uint8_t turn_order[Player::NUM_PLAYERS] = { 0, 1, 2, 3 };
+	Turn turn(turn_id, turn_order);
+
+	player.Print();
+	Card played_card = player.PlayCardForCurrentTurn(turn);
+	CCLOG("Played:");
+	Deck::PrintCard(played_card);
 }

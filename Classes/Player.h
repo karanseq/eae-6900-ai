@@ -26,7 +26,9 @@ public:
 	inline bool HasCard(const Card& i_card) const { return std::find(hand_.begin(), hand_.end(), i_card) != hand_.end(); }
 
 private:
-	uint8_t FindSafestCardForTurn(const Turn& i_turn) const;
+	uint8_t FindCardWhenNoCardsPlayed(const Turn& i_turn) const;
+	uint8_t FindCardWhenHaveLeadingSuit(const Turn& i_turn) const;
+	uint8_t FindCardWhenDontHaveLeadingSuit(const Turn& i_turn) const;
 
 public:
 	static constexpr uint8_t	NUM_PLAYERS = 4;

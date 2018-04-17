@@ -34,6 +34,7 @@ public:
 
 private:
 	void DealCards();
+	void RunTest() const;
 
 public:
 	static constexpr uint8_t					NUM_CARDS_PER_PLAYER = Deck::NUM_CARDS_IN_DECK / Player::NUM_PLAYERS;
