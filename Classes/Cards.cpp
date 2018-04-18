@@ -93,6 +93,12 @@ const char* Deck::GetRankName(ECardRank i_rank)
 	}
 }
 
+bool Deck::HasCard(const std::vector<Card>& i_cards, ECardSuit i_suit, ECardRank i_rank)
+{
+	const Card card_to_find(i_suit, i_rank);
+	return std::find(i_cards.begin(), i_cards.end(), card_to_find) != i_cards.end();
+}
+
 bool Deck::HasCardWithSuit(const std::vector<Card>& i_cards, ECardSuit i_suit)
 {
 	return std::find(i_cards.begin(), i_cards.end(), i_suit) != i_cards.end();
@@ -101,6 +107,37 @@ bool Deck::HasCardWithSuit(const std::vector<Card>& i_cards, ECardSuit i_suit)
 bool Deck::HasCardWithRank(const std::vector<Card>& i_cards, ECardRank i_rank)
 {
 	return std::find(i_cards.begin(), i_cards.end(), i_rank) != i_cards.end();
+}
+
+uint8_t Deck::FindCardWithHighestRank(const std::vector<Card>& i_cards)
+{
+	uint8_t card_index = Hearts::NUM_CARDS_PER_PLAYER;
+	ECardRank highest_rank = ECardRank::Two;
+	for (uint8_t i = 0; i < i_cards.size(); ++i)
+	{
+		card_index = i_cards[i].rank > highest_rank ? i : card_index;
+		highest_rank = i_cards[i].rank > highest_rank ? i_cards[i].rank : highest_rank;
+	}
+	return card_index;
+}
+
+uint8_t Deck::FindCardWithLowestRank(const std::vector<Card>& i_cards)
+{
+	uint8_t card_index = Hearts::NUM_CARDS_PER_PLAYER;
+	ECardRank lowest_rank = ECardRank::Ace;
+	for (uint8_t i = 0; i < i_cards.size(); ++i)
+	{
+		card_index = i_cards[i].rank < lowest_rank ? i : card_index;
+		lowest_rank = i_cards[i].rank < lowest_rank ? i_cards[i].rank : lowest_rank;
+	}
+	return card_index;
+}
+
+uint8_t Deck::FindCard(const std::vector<Card>& i_cards, ECardSuit i_suit, ECardRank i_rank)
+{
+	const Card card_to_find(i_suit, i_rank);
+	const auto& iter = std::find(i_cards.begin(), i_cards.end(), card_to_find);
+	return iter != i_cards.end() ? iter - i_cards.begin() : Hearts::NUM_CARDS_PER_PLAYER;
 }
 
 uint8_t Deck::FindHighestCard(const std::vector<Card>& i_cards, ECardSuit i_suit, ECardRank i_lower_than_or_equal_to_rank /*= ECardRank::Ace*/)

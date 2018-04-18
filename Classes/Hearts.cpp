@@ -27,7 +27,7 @@ void Hearts::Init(HelloWorld* i_scene)
 
 	for (uint8_t i = 0; i < 10; ++i)
 	{
-		CCLOG("Test Iteration %02d", i);
+		CCLOG("\nTest Iteration %02d", i);
 		RunTest();
 	}
 }
@@ -167,7 +167,18 @@ void Hearts::RunTest() const
 	constexpr uint8_t turn_order[Player::NUM_PLAYERS] = { 0, 1, 2, 3 };
 	Turn turn(turn_id, turn_order);
 
+	// Add a played card to simulate the test
+	{
+		Card played_card(ECardSuit(rand() % uint8_t(ECardSuit::Invalid)), ECardRank(rand() % uint8_t(ECardRank::Invalid)));
+		while (std::find(player_hand.begin(), player_hand.end(), played_card) == player_hand.end())
+		{
+			played_card = Card(ECardSuit(rand() % uint8_t(ECardSuit::Invalid)), ECardRank(rand() % uint8_t(ECardRank::Invalid)));
+		}
+		turn.AddCard(played_card);
+	}
+
 	player.Print();
+	turn.Print();
 	Card played_card = player.PlayCardForCurrentTurn(turn);
 	CCLOG("Played:");
 	Deck::PrintCard(played_card);

@@ -111,13 +111,16 @@ uint8_t Player::FindCardWhenHaveLeadingSuit(const Turn& i_turn) const
 	const ECardSuit leading_suit = i_turn.GetLeadingCardSuit();
 	uint8_t index_highest_played_card = Deck::FindHighestCard(i_turn.GetCardsPlayed(), leading_suit);
 
+	// Sanity check
 	if (index_highest_played_card < Hearts::NUM_CARDS_PER_PLAYER)
 	{
+		// Find highest card in hand that's lower than the highest played card
 		const ECardRank highest_rank = i_turn.GetCardsPlayed()[index_highest_played_card].rank;
 		card_index = Deck::FindHighestCard(hand_, leading_suit, highest_rank);
 	}
 	else
 	{
+		// Fallback in case sanity check fails
 		card_index = Deck::FindLowestCard(hand_, leading_suit);
 	}
 
@@ -127,6 +130,27 @@ uint8_t Player::FindCardWhenHaveLeadingSuit(const Turn& i_turn) const
 uint8_t Player::FindCardWhenDontHaveLeadingSuit(const Turn& i_turn) const
 {
 	uint8_t card_index = Hearts::NUM_CARDS_PER_PLAYER;
+
+	// Do I have the queen of spades?
+	const uint8_t queen_of_spades_index = Deck::FindCard(hand_, ECardSuit::Spades, ECardRank::Queen);
+	if (queen_of_spades_index < Hearts::NUM_CARDS_PER_PLAYER)
+	{
+		card_index = queen_of_spades_index;
+		return card_index;
+	}
+
+	// What's the highest hearts card that I have?
+	const uint8_t highest_hearts_card_index = Deck::FindHighestCard(hand_, ECardSuit::Hearts);
+	if (highest_hearts_card_index < Hearts::NUM_CARDS_PER_PLAYER)
+	{
+		card_index = highest_hearts_card_index;
+		return card_index;
+	}
+
+	// What's the highest ranking card that I have?
+	const uint8_t highest_ranking_card = Deck::FindCardWithHighestRank(hand_);
+	card_index = highest_ranking_card;
+
 	return card_index;
 }
 

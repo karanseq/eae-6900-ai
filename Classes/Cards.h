@@ -83,8 +83,14 @@ public:
 	static const char* GetSuitName(ECardSuit i_suit);
 	static const char* GetRankName(ECardRank i_rank);
 
+	static bool HasCard(const std::vector<Card>& i_cards, ECardSuit i_suit, ECardRank i_rank);
 	static bool HasCardWithSuit(const std::vector<Card>& i_cards, ECardSuit i_suit);
 	static bool HasCardWithRank(const std::vector<Card>& i_cards, ECardRank i_rank);
+	
+	static uint8_t FindCardWithHighestRank(const std::vector<Card>& i_cards);
+	static uint8_t FindCardWithLowestRank(const std::vector<Card>& i_cards);
+
+	static uint8_t FindCard(const std::vector<Card>& i_cards, ECardSuit i_suit, ECardRank i_rank);
 	static uint8_t FindHighestCard(const std::vector<Card>& i_cards, ECardSuit i_suit, ECardRank i_lower_than_rank = ECardRank::Ace);
 	static uint8_t FindLowestCard(const std::vector<Card>& i_cards, ECardSuit i_suit, ECardRank i_higher_than_rank = ECardRank::Two);
 

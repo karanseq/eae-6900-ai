@@ -40,7 +40,7 @@ bool HelloWorld::init()
 	initBootstrap();
 
 	hearts_.Init(this);
-	scheduleOnce(CC_SCHEDULE_SELECTOR(HelloWorld::StartRound), DELAY_BEFORE_STARTING_ROUND);
+	//scheduleOnce(CC_SCHEDULE_SELECTOR(HelloWorld::StartRound), DELAY_BEFORE_STARTING_ROUND);
 
     return true;
 }
