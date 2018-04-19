@@ -25,11 +25,7 @@ void Hearts::Init(HelloWorld* i_scene)
 
 	turns_.reserve(NUM_CARDS_PER_PLAYER);
 
-	for (uint8_t i = 0; i < 10; ++i)
-	{
-		CCLOG("\nTest Iteration %02d", i);
-		RunTest();
-	}
+	RunTest();
 }
 
 void Hearts::Shutdown()
@@ -149,37 +145,73 @@ void Hearts::DealCards()
 
 void Hearts::RunTest() const
 {
-	Deck deck;
-	deck.Init();
-	deck.Shuffle();
+#if 0
+	{
+		Deck deck;
+		deck.Init();
+		deck.Shuffle();
 
-	Player player;
-	player.Init(0);
+		Player player;
+		player.Init(0);
 	
-	std::vector<Card>& player_hand = player.GetCardsInHand();
-	for (uint8_t i = 0; i < NUM_CARDS_PER_PLAYER; ++i)
-	{
-		player_hand.push_back(deck.GetCardAt(i));
-	}
-	std::sort(player_hand.begin(), player_hand.end());
-
-	constexpr uint8_t turn_id = 1;
-	constexpr uint8_t turn_order[Player::NUM_PLAYERS] = { 0, 1, 2, 3 };
-	Turn turn(turn_id, turn_order);
-
-	// Add a played card to simulate the test
-	{
-		Card played_card(ECardSuit(rand() % uint8_t(ECardSuit::Invalid)), ECardRank(rand() % uint8_t(ECardRank::Invalid)));
-		while (std::find(player_hand.begin(), player_hand.end(), played_card) == player_hand.end())
+		std::vector<Card>& player_hand = player.GetCardsInHand();
+		for (uint8_t i = 0; i < NUM_CARDS_PER_PLAYER; ++i)
 		{
-			played_card = Card(ECardSuit(rand() % uint8_t(ECardSuit::Invalid)), ECardRank(rand() % uint8_t(ECardRank::Invalid)));
+			player_hand.push_back(deck.GetCardAt(i));
 		}
-		turn.AddCard(played_card);
-	}
+		std::sort(player_hand.begin(), player_hand.end());
 
-	player.Print();
-	turn.Print();
-	Card played_card = player.PlayCardForCurrentTurn(turn);
-	CCLOG("Played:");
-	Deck::PrintCard(played_card);
+		constexpr uint8_t turn_id = 1;
+		constexpr uint8_t turn_order[Player::NUM_PLAYERS] = { 0, 1, 2, 3 };
+		Turn turn(turn_id, turn_order);
+
+		// Add a played card to simulate the test
+		{
+			Card played_card(ECardSuit(rand() % uint8_t(ECardSuit::Invalid)), ECardRank(rand() % uint8_t(ECardRank::Invalid)));
+			while (std::find(player_hand.begin(), player_hand.end(), played_card) == player_hand.end())
+			{
+				played_card = Card(ECardSuit(rand() % uint8_t(ECardSuit::Invalid)), ECardRank(rand() % uint8_t(ECardRank::Invalid)));
+			}
+			turn.AddCard(played_card);
+		}
+
+		player.Print();
+		turn.Print();
+		Card played_card = player.PlayCardForCurrentTurn(turn);
+		CCLOG("Played:");
+		Deck::PrintCard(played_card);
+	}
+#else
+	{
+		Player player;
+		player.Init(0);
+
+		std::vector<Card>& hand = player.GetCardsInHand();
+		hand.clear();
+		hand.push_back(Card(ECardSuit::Clubs, ECardRank::Two));
+		hand.push_back(Card(ECardSuit::Clubs, ECardRank::Three));
+		hand.push_back(Card(ECardSuit::Clubs, ECardRank::Four));
+		hand.push_back(Card(ECardSuit::Clubs, ECardRank::Six));
+		hand.push_back(Card(ECardSuit::Diamonds, ECardRank::Five));
+		hand.push_back(Card(ECardSuit::Diamonds, ECardRank::Eight));
+		hand.push_back(Card(ECardSuit::Diamonds, ECardRank::Nine));
+		hand.push_back(Card(ECardSuit::Diamonds, ECardRank::Jack));
+		hand.push_back(Card(ECardSuit::Diamonds, ECardRank::King));
+		hand.push_back(Card(ECardSuit::Spades, ECardRank::Three));
+		hand.push_back(Card(ECardSuit::Spades, ECardRank::Seven));
+		hand.push_back(Card(ECardSuit::Spades, ECardRank::Ten));
+		hand.push_back(Card(ECardSuit::Spades, ECardRank::Ace));
+
+		constexpr uint8_t turn_id = 1;
+		constexpr uint8_t turn_order[Player::NUM_PLAYERS] = { 0, 1, 2, 3 };
+		Turn turn(turn_id, turn_order);
+		turn.AddCard(Card(ECardSuit::Hearts, ECardRank::Six));
+
+		player.Print();
+		turn.Print();
+		Card played_card = player.PlayCardForCurrentTurn(turn);
+		CCLOG("Played:");
+		Deck::PrintCard(played_card);
+	}
+#endif
 }
