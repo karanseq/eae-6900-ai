@@ -53,6 +53,11 @@ struct Card
 		return suit == i_other.suit && rank == i_other.rank;
 	}
 
+	inline bool operator!=(const Card& i_other) const
+	{
+		return !(*this == i_other);
+	}
+
 	inline bool operator==(const ECardSuit i_suit) const
 	{
 		return suit == i_suit;
@@ -82,6 +87,7 @@ public:
 
 	static const char* GetSuitName(ECardSuit i_suit);
 	static const char* GetRankName(ECardRank i_rank);
+	static uint8_t GetCardIndex(const Card& i_card);
 
 	static bool HasCard(const std::vector<Card>& i_cards, ECardSuit i_suit, ECardRank i_rank);
 	static bool HasCardWithSuit(const std::vector<Card>& i_cards, ECardSuit i_suit);

@@ -93,6 +93,11 @@ const char* Deck::GetRankName(ECardRank i_rank)
 	}
 }
 
+uint8_t Deck::GetCardIndex(const Card& i_card)
+{
+	return uint8_t(i_card.suit) * uint8_t(ECardRank::Invalid) + uint8_t(i_card.rank);
+}
+
 bool Deck::HasCard(const std::vector<Card>& i_cards, ECardSuit i_suit, ECardRank i_rank)
 {
 	const Card card_to_find(i_suit, i_rank);

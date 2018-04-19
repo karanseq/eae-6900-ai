@@ -10,14 +10,31 @@
 USING_NS_CC;
 
 constexpr char* TTF_FONT_PATH = "fonts/Marker Felt.ttf";
-constexpr float DELAY_BEFORE_STARTING_ROUND = 0.1f;//1.0f;
-constexpr float DELAY_BEFORE_STARTING_TURN = 0.1f;//1.5f;
-constexpr float DELAY_BEFORE_PLAYING_CARD = 0.1f;
+constexpr float DELAY_BEFORE_STARTING_ROUND = 1.0f;//0.1f;//1.0f;
+constexpr float DELAY_BEFORE_STARTING_TURN = 1.5f;//0.1f;//1.5f;
+constexpr float DELAY_BEFORE_PLAYING_CARD = 0.25f;
+constexpr float CARD_MOVE_DURATION = 0.25f;
 
-const Vec2 PLAYER0_PLAYED_CARD_POSITION = Vec2(640.0f, 200.0f);
-const Vec2 PLAYER1_PLAYED_CARD_POSITION = Vec2(320.0f, 400.0f);
-const Vec2 PLAYER2_PLAYED_CARD_POSITION = Vec2(640.0f, 200.0f);
-const Vec2 PLAYER3_PLAYED_CARD_POSITION = Vec2(960.0f, 400.0f);
+const Vec2 PLAYER_HAND_START_POSITIONS[Player::NUM_PLAYERS] = {
+	Vec2(320.0f, 0.0f),
+	Vec2(1280.0f, 200.0f),
+	Vec2(960.0f, 800.0f),
+	Vec2(0.0f, 600.0f)
+};
+
+const Vec2 PLAYER_HAND_MIDDLE_POSITIONS[Player::NUM_PLAYERS] = {
+	Vec2(640.0f, 0.0f),
+	Vec2(1280.0f, 400.0f),
+	Vec2(640.0f, 800.0f),
+	Vec2(0.0f, 400.0f)
+};
+
+const Vec2 PLAYER_PLAYED_CARD_POSITIONS[Player::NUM_PLAYERS] = {
+	Vec2(640.0f, 250.0f),
+	Vec2(960.0f, 400.0f),
+	Vec2(640.0f, 550.0f),
+	Vec2(320.0f, 400.0f)
+};
 
 Scene* HelloWorld::createScene()
 {
@@ -50,18 +67,57 @@ bool HelloWorld::init()
 void HelloWorld::FinishedDealingCards()
 {
 	//CCLOG(__FUNCTION__);
+	for (uint8_t i = 0; i < Player::NUM_PLAYERS; ++i)
+	{
+		UpdateCardSpritesForPlayer(i);
+	}
+
 	scheduleOnce(CC_SCHEDULE_SELECTOR(HelloWorld::StartTurn), DELAY_BEFORE_STARTING_TURN);
 }
 
-void HelloWorld::FinishedPlayingCard(const Card& i_card)
+void HelloWorld::FinishedPlayingCard(uint8_t i_player_id, const Card& i_card)
 {
 	//CCLOG(__FUNCTION__);
+	if (i_player_id < Player::NUM_PLAYERS &&
+		i_card != Card::INVALID)
+	{
+		// Get data about the card
+		const uint8_t card_sprite_index = Deck::GetCardIndex(i_card);
+		Sprite* card_sprite = card_sprites_.at(card_sprite_index);
+
+		// Update the card
+		EaseSineOut* move_to = EaseSineOut::create(MoveTo::create(CARD_MOVE_DURATION, PLAYER_PLAYED_CARD_POSITIONS[i_player_id]));
+		EaseSineOut* rotate_to = EaseSineOut::create(RotateTo::create(CARD_MOVE_DURATION, 0.0f));
+		Spawn* move_and_rotate = Spawn::createWithTwoActions(move_to, rotate_to);
+		card_sprite->runAction(move_and_rotate);
+
+		// Update the other cards
+		UpdateCardSpritesForPlayer(i_player_id);
+	}
+
 	scheduleOnce(CC_SCHEDULE_SELECTOR(HelloWorld::PlayCard), DELAY_BEFORE_PLAYING_CARD);
 }
 
 void HelloWorld::FinishedTurn(const Turn& i_turn)
 {
 	//CCLOG(__FUNCTION__);
+	const std::vector<Card>& cards_played = i_turn.GetCardsPlayed();
+	const uint8_t loser_id = i_turn.GetLoser();
+
+	for (uint8_t i = 0; i < Player::NUM_PLAYERS; ++i)
+	{
+		// Get data about the card
+		const uint8_t card_sprite_index = Deck::GetCardIndex(cards_played[i]);
+		Sprite* card_sprite = card_sprites_.at(card_sprite_index);
+
+		// Update the card
+		DelayTime* wait = DelayTime::create(DELAY_BEFORE_STARTING_TURN - CARD_MOVE_DURATION);
+		EaseSineOut* move_to = EaseSineOut::create(MoveTo::create(CARD_MOVE_DURATION, PLAYER_HAND_MIDDLE_POSITIONS[loser_id]));
+		RemoveSelf* remove_self = RemoveSelf::create();
+		Sequence* move_then_remove = Sequence::create({ wait, move_to, remove_self });
+		card_sprite->runAction(move_then_remove);
+	}
+
 	scheduleOnce(CC_SCHEDULE_SELECTOR(HelloWorld::StartTurn), DELAY_BEFORE_STARTING_TURN);
 }
 
@@ -152,9 +208,38 @@ void HelloWorld::InitCardSprites()
 	}
 }
 
+void HelloWorld::UpdateCardSpritesForPlayer(uint8_t i_player_id)
+{
+	const std::vector<Card>& player_hand = hearts_.GetPlayers()[i_player_id].GetCardsInHand();
+
+	const float card_rotation = i_player_id * 90.0f;
+
+	for (uint8_t j = 0; j < player_hand.size(); ++j)
+	{
+		const uint8_t card_sprite_index = Deck::GetCardIndex(player_hand[j]);
+		Sprite* card_sprite = card_sprites_.at(card_sprite_index);
+		card_sprite->setPosition(GetHandPositionForCard(i_player_id, j));
+		card_sprite->setRotation(card_rotation);
+
+		if (card_sprite->getParent() == nullptr)
+		{
+			addChild(card_sprite, 100 + j);
+		}
+	}
+}
+
 Sprite* HelloWorld::GetSpriteForCard(const Card& i_card) const
 {
-	return card_sprites_.at(size_t(i_card.suit) * size_t(ECardRank::Invalid) + size_t(i_card.rank));
+	return card_sprites_.at(Deck::GetCardIndex(i_card));
+}
+
+Vec2 HelloWorld::GetHandPositionForCard(uint8_t i_player_id, uint8_t i_card_id) const
+{
+	const float card_position_stride_x = (i_player_id == 0 ? 50.0f : (i_player_id == 2 ? -50.0f : 0.0f));
+	const float card_position_stride_y = (i_player_id == 1 ? 50.0f : (i_player_id == 3 ? -50.0f : 0.0f));
+	const Vec2 card_stride(card_position_stride_x * i_card_id, card_position_stride_y * i_card_id);
+
+	return PLAYER_HAND_START_POSITIONS[i_player_id] + card_stride;
 }
 
 void HelloWorld::menuCloseCallback(Ref* pSender)

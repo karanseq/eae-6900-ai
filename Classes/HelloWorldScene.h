@@ -22,7 +22,7 @@ protected:
 
 public:
 	void FinishedDealingCards();
-	void FinishedPlayingCard(const Card& i_card);
+	void FinishedPlayingCard(uint8_t i_player_id, const Card& i_card);
 	void FinishedTurn(const Turn& i_turn);
 	void FinishedRound();
 
@@ -32,7 +32,9 @@ private:
 	void PlayCard(float dt);
 
 	void InitCardSprites();
+	void UpdateCardSpritesForPlayer(uint8_t i_player_id);
 	cocos2d::Sprite* GetSpriteForCard(const Card& i_card) const;
+	cocos2d::Vec2 GetHandPositionForCard(uint8_t i_player_id, uint8_t i_card_id) const;
 
 public:
 	inline const cocos2d::Size& GetVisibleSize() const { return visible_size_; }

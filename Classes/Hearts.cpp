@@ -87,7 +87,7 @@ void Hearts::StartTurn()
 	Turn current_turn(current_turn_id_, turn_order);
 	turns_.push_back(current_turn);
 
-	scene_->FinishedPlayingCard(Card::INVALID);
+	scene_->FinishedPlayingCard(Player::NUM_PLAYERS, Card::INVALID);
 }
 
 void Hearts::PlayCard()
@@ -111,7 +111,7 @@ void Hearts::PlayCard()
 		// Add the played card to the current turn
 		current_turn.AddCard(played_card);
 
-		scene_->FinishedPlayingCard(played_card);
+		scene_->FinishedPlayingCard(player_id, played_card);
 	}
 	else
 	{
