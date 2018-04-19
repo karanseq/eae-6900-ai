@@ -10,9 +10,9 @@
 USING_NS_CC;
 
 constexpr char* TTF_FONT_PATH = "fonts/Marker Felt.ttf";
-constexpr float DELAY_BEFORE_STARTING_ROUND = 0.25f;//1.0f;
-constexpr float DELAY_BEFORE_STARTING_TURN = 0.25;//1.5f;
-constexpr float DELAY_BEFORE_PLAYING_CARD = 0.25f;
+constexpr float DELAY_BEFORE_STARTING_ROUND = 0.1f;//1.0f;
+constexpr float DELAY_BEFORE_STARTING_TURN = 0.1f;//1.5f;
+constexpr float DELAY_BEFORE_PLAYING_CARD = 0.1f;
 
 const Vec2 PLAYER0_PLAYED_CARD_POSITION = Vec2(640.0f, 200.0f);
 const Vec2 PLAYER1_PLAYED_CARD_POSITION = Vec2(320.0f, 400.0f);
@@ -40,7 +40,7 @@ bool HelloWorld::init()
 	initBootstrap();
 
 	hearts_.Init(this);
-	//scheduleOnce(CC_SCHEDULE_SELECTOR(HelloWorld::StartRound), DELAY_BEFORE_STARTING_ROUND);
+	scheduleOnce(CC_SCHEDULE_SELECTOR(HelloWorld::StartRound), DELAY_BEFORE_STARTING_ROUND);
 
     return true;
 }
@@ -66,7 +66,8 @@ void HelloWorld::FinishedTurn(const Turn& i_turn)
 void HelloWorld::FinishedRound()
 {
 	//CCLOG(__FUNCTION__);
-	scheduleOnce(CC_SCHEDULE_SELECTOR(HelloWorld::StartRound), DELAY_BEFORE_STARTING_ROUND);
+	//scheduleOnce(CC_SCHEDULE_SELECTOR(HelloWorld::StartRound), DELAY_BEFORE_STARTING_ROUND);
+	Director::getInstance()->end();
 }
 
 void HelloWorld::StartRound(float dt)

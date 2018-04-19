@@ -24,8 +24,6 @@ void Hearts::Init(HelloWorld* i_scene)
 	}
 
 	turns_.reserve(NUM_CARDS_PER_PLAYER);
-
-	RunTest();
 }
 
 void Hearts::Shutdown()

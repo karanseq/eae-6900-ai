@@ -182,4 +182,18 @@ void Turn::FindLoser()
 		CCLOGERROR("FindLoser has been called but the turn hasn't ended yet!");
 		return;
 	}
+
+	const ECardSuit leading_suit = cards_[0].suit;
+	ECardRank highest_ranking_card = cards_[0].rank;
+	loser_id_ = order_[0];
+
+	for (uint8_t i = 1; i < Player::NUM_PLAYERS; ++i)
+	{
+		if (cards_[i].suit == leading_suit &&
+			cards_[i].rank > highest_ranking_card)
+		{
+			loser_id_ = order_[i];
+			highest_ranking_card = cards_[i].rank;
+		}
+	}
 }
