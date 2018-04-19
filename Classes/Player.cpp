@@ -67,20 +67,17 @@ Card Player::PlayCardForCurrentTurn(const Turn& i_turn)
 
 	if (playing_card_index >= Hearts::NUM_CARDS_PER_PLAYER)
 	{
+		playing_card_index = uint8_t(hand_.size() - 1);
 		CCLOGERROR("Player-%d couldn't find a suitable card for the following turn!", id_);
 		i_turn.Print();
-		return Card::INVALID;
 	}
-	else
-	{
-		// Copy the card before discarding it
-		Card playing_card = hand_[playing_card_index];
 
-		// Discard this card
-		hand_.erase(hand_.begin() + playing_card_index);
+	// Copy the card before discarding it
+	Card playing_card = hand_[playing_card_index];
+	// Discard this card
+	hand_.erase(hand_.begin() + playing_card_index);
 
-		return playing_card;
-	}
+	return playing_card;
 }
 
 uint8_t Player::FindCardWhenNoCardsPlayed(const Turn& i_turn) const

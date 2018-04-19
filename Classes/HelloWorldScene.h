@@ -51,6 +51,7 @@ private:
 private:
 	Hearts										hearts_;
 	cocos2d::Vector<cocos2d::Sprite*>			card_sprites_;
+	bool										max_score_reached_ = false;
 
 };
 

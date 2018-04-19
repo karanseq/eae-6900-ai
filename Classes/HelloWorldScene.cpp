@@ -10,7 +10,7 @@
 USING_NS_CC;
 
 constexpr char* TTF_FONT_PATH = "fonts/Marker Felt.ttf";
-constexpr float DELAY_BEFORE_STARTING_ROUND = 1.0f;//0.1f;//1.0f;
+constexpr float DELAY_BEFORE_STARTING_ROUND = 2.5f;//0.1f;//1.0f;
 constexpr float DELAY_BEFORE_STARTING_TURN = 1.5f;//0.1f;//1.5f;
 constexpr float DELAY_BEFORE_PLAYING_CARD = 0.25f;
 constexpr float CARD_MOVE_DURATION = 0.25f;
@@ -59,7 +59,7 @@ bool HelloWorld::init()
 	InitCardSprites();
 
 	hearts_.Init(this);
-	scheduleOnce(CC_SCHEDULE_SELECTOR(HelloWorld::StartRound), DELAY_BEFORE_STARTING_ROUND);
+	StartRound(0.0f);
 
     return true;
 }
@@ -123,15 +123,48 @@ void HelloWorld::FinishedTurn(const Turn& i_turn)
 
 void HelloWorld::FinishedRound()
 {
-	//CCLOG(__FUNCTION__);
-	//scheduleOnce(CC_SCHEDULE_SELECTOR(HelloWorld::StartRound), DELAY_BEFORE_STARTING_ROUND);
-	Director::getInstance()->end();
+	uint8_t max_score = 0;
+
+	// Display scores
+	Layer* score_layer = Layer::create();
+	{
+		Vec2 position(640.0f, 550.0f);
+
+		for (uint8_t i = 0; i < Player::NUM_PLAYERS; ++i)
+		{
+			const uint8_t score = hearts_.GetPlayers()[i].GetScore();
+			max_score = score > max_score ? score : max_score;
+
+			std::string score_string;
+			score_string.reserve(16);
+			score_string = std::string("Player-") + std::to_string(i) + std::string(": ") + std::to_string(score);
+
+			Label* score_label = Label::createWithTTF(score_string, TTF_FONT_PATH, 24);
+			score_label->setPosition(position);
+			score_layer->addChild(score_label);
+
+			position.y -= 75.0f;
+		}
+	}
+	score_layer->runAction(Sequence::createWithTwoActions(DelayTime::create(DELAY_BEFORE_STARTING_ROUND), RemoveSelf::create()));
+	addChild(score_layer, 250);
+
+	// Check if game should continue
+	max_score_reached_ = max_score >= 100;
+	scheduleOnce(CC_SCHEDULE_SELECTOR(HelloWorld::StartRound), DELAY_BEFORE_STARTING_ROUND);
 }
 
 void HelloWorld::StartRound(float dt)
 {
 	//CCLOG(__FUNCTION__);
-	hearts_.StartRound();
+	if (max_score_reached_ == true)
+	{
+		Director::getInstance()->end();
+	}
+	else
+	{
+		hearts_.StartRound();
+	}
 }
 
 void HelloWorld::StartTurn(float dt)
@@ -256,6 +289,9 @@ void HelloWorld::initBootstrap()
 	visible_size_ = Director::getInstance()->getVisibleSize();
 	origin_ = Director::getInstance()->getVisibleOrigin();
 
+	auto bg = LayerColor::create(Color4B(0, 51, 102, 255));
+	addChild(bg, 0);
+
 	MenuItemImage* closeItem = MenuItemImage::create(
 		"CloseNormal.png",
 		"CloseSelected.png",
@@ -278,28 +314,4 @@ void HelloWorld::initBootstrap()
 	auto menu = Menu::create(closeItem, NULL);
 	menu->setPosition(Vec2::ZERO);
 	this->addChild(menu, 1);
-
-	auto label = Label::createWithTTF("Hearts", TTF_FONT_PATH, 24);
-	if (label == nullptr)
-	{
-		problemLoading(TTF_FONT_PATH);
-	}
-	else
-	{
-		label->setPosition(Vec2(origin_.x + visible_size_.width / 2,
-			origin_.y + visible_size_.height - label->getContentSize().height));
-
-		this->addChild(label, 1);
-	}
-
-	//auto sprite = Sprite::create("cards/queen_of_spades2.png");
-	//if (sprite == nullptr)
-	//{
-	//	problemLoading("'queen_of_spades2.png'");
-	//}
-	//else
-	//{
-	//	sprite->setPosition(Vec2(visible_size_.width / 2 + origin_.x, visible_size_.height / 2 + origin_.y));
-	//	this->addChild(sprite, 0);
-	//}
 }
