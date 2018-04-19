@@ -39,6 +39,8 @@ bool HelloWorld::init()
 
 	initBootstrap();
 
+	InitCardSprites();
+
 	hearts_.Init(this);
 	scheduleOnce(CC_SCHEDULE_SELECTOR(HelloWorld::StartRound), DELAY_BEFORE_STARTING_ROUND);
 
@@ -86,6 +88,16 @@ void HelloWorld::PlayCard(float dt)
 {
 	//CCLOG(__FUNCTION__);
 	hearts_.PlayCard();
+}
+
+void HelloWorld::InitCardSprites()
+{
+
+}
+
+Sprite* HelloWorld::GetSpriteForCard(const Card& i_card) const
+{
+	return nullptr;
 }
 
 void HelloWorld::menuCloseCallback(Ref* pSender)

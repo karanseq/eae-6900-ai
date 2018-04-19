@@ -31,6 +31,9 @@ private:
 	void StartTurn(float dt);
 	void PlayCard(float dt);
 
+	void InitCardSprites();
+	cocos2d::Sprite* GetSpriteForCard(const Card& i_card) const;
+
 public:
 	inline const cocos2d::Size& GetVisibleSize() const { return visible_size_; }
 	inline const cocos2d::Vec2& GetOrigin() const { return origin_; }
@@ -45,6 +48,7 @@ private:
 
 private:
 	Hearts										hearts_;
+	cocos2d::Vector<cocos2d::Sprite*>			card_sprites_;
 
 };
 

@@ -169,13 +169,14 @@ void Turn::Print() const
 	CCLOG("Turn-%d", id_);
 	CCLOG("Order:%d, %d, %d, %d", order_[0], order_[1], order_[2], order_[3]);
 	CCLOG("Loser:%d", loser_id_);
+	CCLOG("Score:%d", score_);
 	for (const auto& card : cards_)
 	{
 		Deck::PrintCard(card);
 	}
 }
 
-void Turn::FindLoser()
+void Turn::EndTurn()
 {
 	if (cards_.size() < Player::NUM_PLAYERS)
 	{
@@ -183,10 +184,12 @@ void Turn::FindLoser()
 		return;
 	}
 
+	// Prepare parameters to find the loser of this turn
 	const ECardSuit leading_suit = cards_[0].suit;
 	ECardRank highest_ranking_card = cards_[0].rank;
 	loser_id_ = order_[0];
 
+	// Find the loser of this turn
 	for (uint8_t i = 1; i < Player::NUM_PLAYERS; ++i)
 	{
 		if (cards_[i].suit == leading_suit &&
@@ -195,5 +198,12 @@ void Turn::FindLoser()
 			loser_id_ = order_[i];
 			highest_ranking_card = cards_[i].rank;
 		}
+	}
+
+	// Calculate the score that will be added to the loser
+	for (const Card& card : cards_)
+	{
+		score_ += card.suit == ECardSuit::Hearts ? 1 : 0;
+		score_ += card.suit == ECardSuit::Spades && card.rank == ECardRank::Queen ? 13 : 0;
 	}
 }

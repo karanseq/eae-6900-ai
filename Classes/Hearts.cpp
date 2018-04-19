@@ -48,6 +48,11 @@ void Hearts::StartTurn()
 	// Is it past the last turn?
 	if (current_turn_id_ == NUM_CARDS_PER_PLAYER)
 	{
+		for (const Player& player : players_)
+		{
+			player.Print();
+		}
+
 		scene_->FinishedRound();
 		return;
 	}
@@ -110,8 +115,12 @@ void Hearts::PlayCard()
 	}
 	else
 	{
-		current_turn.FindLoser();
+		// End the turn
+		current_turn.EndTurn();
 		current_turn.Print();
+
+		// Add the score to the player that lost this turn
+		players_[current_turn.GetLoser()].AddScore(current_turn.GetScore());
 
 		scene_->FinishedTurn(current_turn);
 		++current_turn_id_;
