@@ -19,7 +19,7 @@ public:
 
 protected:    
     virtual bool init();
-    
+
 public:
 	void FinishedDealingCards();
 	void FinishedPlayingCard(const Card& i_card);
