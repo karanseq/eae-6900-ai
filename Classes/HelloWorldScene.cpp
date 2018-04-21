@@ -12,7 +12,7 @@ USING_NS_CC;
 constexpr char* TTF_FONT_PATH = "fonts/Marker Felt.ttf";
 constexpr float DELAY_BEFORE_STARTING_ROUND = 2.5f;//0.1f;//1.0f;
 constexpr float DELAY_BEFORE_STARTING_TURN = 1.5f;//0.1f;//1.5f;
-constexpr float DELAY_BEFORE_PLAYING_CARD = 0.25f;
+constexpr float DELAY_BEFORE_PLAYING_CARD = 0.5f;
 constexpr float CARD_MOVE_DURATION = 0.25f;
 
 const Vec2 PLAYER_HAND_START_POSITIONS[Player::NUM_PLAYERS] = {

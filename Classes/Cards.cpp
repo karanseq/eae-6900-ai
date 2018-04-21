@@ -116,7 +116,7 @@ bool Deck::HasCardWithRank(const std::vector<Card>& i_cards, ECardRank i_rank)
 
 uint8_t Deck::FindCardWithHighestRank(const std::vector<Card>& i_cards)
 {
-	uint8_t card_index = Hearts::NUM_CARDS_PER_PLAYER;
+	uint8_t card_index = 0;
 	ECardRank highest_rank = ECardRank::Two;
 	for (uint8_t i = 0; i < i_cards.size(); ++i)
 	{
@@ -128,7 +128,7 @@ uint8_t Deck::FindCardWithHighestRank(const std::vector<Card>& i_cards)
 
 uint8_t Deck::FindCardWithLowestRank(const std::vector<Card>& i_cards)
 {
-	uint8_t card_index = Hearts::NUM_CARDS_PER_PLAYER;
+	uint8_t card_index = 0;
 	ECardRank lowest_rank = ECardRank::Ace;
 	for (uint8_t i = 0; i < i_cards.size(); ++i)
 	{

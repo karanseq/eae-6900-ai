@@ -6,14 +6,17 @@
 // Game includes
 #include "Cards.h"
 #include "Hearts.h"
+#include "Simulation.h"
 
 //============================================================================
 // Player
 
-void Player::Init(uint8_t i_id)
+void Player::Init(uint8_t i_id, bool i_simulation_enabled, Hearts* i_hearts)
 {
 	id_ = i_id;
 	hand_.reserve(Hearts::NUM_CARDS_PER_PLAYER);
+	simulation_enabled_ = i_simulation_enabled;
+	hearts_ = i_hearts;
 }
 
 void Player::Print() const
@@ -41,27 +44,41 @@ Card Player::PlayCardForCurrentTurn(const Turn& i_turn)
 		}
 		else
 		{
-			playing_card_index = FindCardWhenNoCardsPlayed(i_turn);
+			if (simulation_enabled_ == true)
+			{
+				playing_card_index = FindCardUsingSimulation(i_turn);
+			}
+			else
+			{
+				playing_card_index = FindCardWhenNoCardsPlayed(i_turn);
+			}
 		}
 	}
 	else
 	{
-		// Get the cards that have been played
-		const std::vector<Card>& cards_played = i_turn.GetCardsPlayed();
-		
-		// What was the leading card?
-		ECardSuit leading_card_suit = cards_played[0].suit;
-		ECardRank leading_card_rank = cards_played[0].rank;
-
-		// Do I have a card that matches the leading suit?
-		bool have_leading_suit = Deck::HasCardWithSuit(hand_, leading_card_suit);
-		if (have_leading_suit)
+		if (simulation_enabled_ == true)
 		{
-			playing_card_index = FindCardWhenHaveLeadingSuit(i_turn);
+			playing_card_index = FindCardUsingSimulation(i_turn);
 		}
 		else
 		{
-			playing_card_index = FindCardWhenDontHaveLeadingSuit(i_turn);
+			// Get the cards that have been played
+			const std::vector<Card>& cards_played_this_turn = i_turn.GetCardsPlayed();
+		
+			// What was the leading card?
+			ECardSuit leading_card_suit = cards_played_this_turn[0].suit;
+			ECardRank leading_card_rank = cards_played_this_turn[0].rank;
+
+			// Do I have a card that matches the leading suit?
+			bool have_leading_suit = Deck::HasCardWithSuit(hand_, leading_card_suit);
+			if (have_leading_suit)
+			{
+				playing_card_index = FindCardWhenHaveLeadingSuit(i_turn);
+			}
+			else
+			{
+				playing_card_index = FindCardWhenDontHaveLeadingSuit(i_turn);
+			}
 		}
 	}
 
@@ -147,6 +164,67 @@ uint8_t Player::FindCardWhenDontHaveLeadingSuit(const Turn& i_turn) const
 	// What's the highest ranking card that I have?
 	const uint8_t highest_ranking_card = Deck::FindCardWithHighestRank(hand_);
 	card_index = highest_ranking_card;
+
+	return card_index;
+}
+
+uint8_t Player::FindCardUsingSimulation(const Turn& i_turn) const
+{
+	Simulation simulation;
+
+	const std::vector<Card>& played_cards = hearts_->GetPlayedCards();
+	std::vector<Card> opponent_cards;
+	{
+		constexpr uint8_t max_suit = (uint8_t)ECardSuit::Spades;
+		constexpr uint8_t max_rank = (uint8_t)ECardRank::Ace;
+
+		for (uint8_t suit = 0; suit <= max_suit; ++suit)
+		{
+			for (uint8_t rank = 0; rank <= max_rank; ++rank)
+			{
+				if (Deck::HasCard(hand_, ECardSuit(suit), ECardRank(rank)) ||
+					Deck::HasCard(played_cards, ECardSuit(suit), ECardRank(rank)))
+				{
+					continue;
+				}
+
+				opponent_cards.push_back(Card(ECardSuit(suit), ECardRank(rank)));
+			}
+		}
+	}
+
+	constexpr double execution_time = 0.5;
+	simulation.Start(this,
+		i_turn,
+		played_cards,
+		opponent_cards,
+		execution_time);
+
+	uint8_t card_index = Hearts::NUM_CARDS_PER_PLAYER;
+	{
+		const std::vector<CardScorePair>& card_scores = simulation.GetCardScores();
+		Card card_with_lowest_score = Card::TWO_OF_CLUBS;
+		uint8_t lowest_score = Deck::NUM_CARDS_IN_DECK;
+
+		for (const CardScorePair& card_score : card_scores)
+		{
+			if (card_score.average_score < lowest_score)
+			{
+				card_with_lowest_score = card_score.card;
+				lowest_score = card_score.average_score;
+			}
+			else if (card_score.average_score == lowest_score)
+			{
+				card_with_lowest_score = card_score.card.rank < card_with_lowest_score.rank ? card_score.card : card_with_lowest_score;
+			}
+		}
+
+		const auto card_iter = std::find(hand_.begin(), hand_.end(), card_with_lowest_score);
+		card_index = card_iter - hand_.begin();
+
+		CCLOG("Card chosen after running simulation:");
+		Deck::PrintCard(hand_[card_index]);
+	}
 
 	return card_index;
 }

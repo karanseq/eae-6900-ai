@@ -9,6 +9,7 @@
 #include "Cards.h"
 
 // Forward declarations
+class Hearts;
 class Turn;
 
 //============================================================================
@@ -20,7 +21,7 @@ public:
 	Player() = default;
 	~Player() = default;
 
-	void Init(uint8_t i_id);
+	void Init(uint8_t i_id, bool i_simulation_enabled, Hearts* i_hearts);
 	void Print() const;
 
 	Card PlayCardForCurrentTurn(const Turn& i_turn);
@@ -32,6 +33,7 @@ private:
 	uint8_t FindCardWhenNoCardsPlayed(const Turn& i_turn) const;
 	uint8_t FindCardWhenHaveLeadingSuit(const Turn& i_turn) const;
 	uint8_t FindCardWhenDontHaveLeadingSuit(const Turn& i_turn) const;
+	uint8_t FindCardUsingSimulation(const Turn& i_turn) const;
 
 public:
 	static constexpr uint8_t	NUM_PLAYERS = 4;
@@ -40,11 +42,15 @@ public:
 	inline uint8_t GetScore() const { return score_; }
 	inline const std::vector<Card>& GetCardsInHand() const { return hand_; }
 	inline std::vector<Card>& GetCardsInHand() { return hand_; }
+	inline Hearts* GetHearts() const { return hearts_; }
+	inline bool GetSimulationEnabled() const { return simulation_enabled_; }
 
 private:
 	uint8_t										id_ = 0;
 	uint16_t									score_ = 0;
 	std::vector<Card>							hand_;
+	Hearts*										hearts_ = nullptr;
+	bool										simulation_enabled_ = false;
 
 };
 

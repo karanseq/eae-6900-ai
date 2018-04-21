@@ -34,7 +34,6 @@ public:
 
 private:
 	void DealCards();
-	void RunTest() const;
 
 public:
 	static constexpr uint8_t					NUM_CARDS_PER_PLAYER = Deck::NUM_CARDS_IN_DECK / Player::NUM_PLAYERS;
@@ -42,6 +41,8 @@ public:
 	inline const Deck& GetDeck() const { return deck_; }
 	inline const Player* GetPlayers() const { return players_; }
 	inline const std::vector<Turn>& GetTurns() const { return turns_; }
+	inline const std::vector<Card>& GetPlayedCards() const { return played_cards_; }
+	inline bool GetHeartsBroken() const { return hearts_broken_; }
 
 private:
 	Deck										deck_;
@@ -49,6 +50,8 @@ private:
 
 	std::vector<Turn>							turns_;
 	uint8_t										current_turn_id_ = 0;
+	std::vector<Card>							played_cards_;
+	bool										hearts_broken_ = false;
 	
 	HelloWorld*									scene_ = nullptr;
 
