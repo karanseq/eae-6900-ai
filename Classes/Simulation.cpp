@@ -160,10 +160,7 @@ void Simulation::PrepareSimuationInputs(std::vector<Card>& o_player_hand,
 	std::vector<Card>& o_opponent_cards) const
 {
 	o_player_hand = player_->GetCardsInHand();
-
-	o_played_cards.reserve(Deck::NUM_CARDS_IN_DECK);
 	o_played_cards = cards_played_before_simulation_;
-	
 	o_opponent_cards = opponent_cards_;
 }
 

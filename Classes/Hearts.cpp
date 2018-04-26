@@ -33,7 +33,6 @@ void Hearts::Shutdown()
 
 void Hearts::StartRound()
 {
-	//CCLOG(__FUNCTION__);
 	turns_.clear();
 	current_turn_id_ = 0;
 	played_cards_.clear();
@@ -44,8 +43,6 @@ void Hearts::StartRound()
 
 void Hearts::StartTurn()
 {
-	//CCLOG(__FUNCTION__);
-
 	uint8_t first_player = 0;
 
 	// Is it past the last turn?
@@ -95,8 +92,6 @@ void Hearts::StartTurn()
 
 void Hearts::PlayCard()
 {
-	//CCLOG(__FUNCTION__);
-	
 	Turn& current_turn = turns_[current_turn_id_];
 
 	// Get the number of cards that have been played
@@ -134,8 +129,6 @@ void Hearts::PlayCard()
 
 void Hearts::DealCards()
 {
-	//CCLOG(__FUNCTION__);
-
 	deck_.Shuffle();
 
 	for (uint8_t i = 0; i < Player::NUM_PLAYERS; ++i)
