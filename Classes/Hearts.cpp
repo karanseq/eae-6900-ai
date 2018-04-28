@@ -20,7 +20,7 @@ void Hearts::Init(HelloWorld* i_scene)
 
 	for (uint8_t i = 0; i < Player::NUM_PLAYERS; ++i)
 	{
-		const bool simulation_enabled = i == 0;
+		const bool simulation_enabled = i == 4;
 		players_[i].Init(i, simulation_enabled, this);
 	}
 
